@@ -52,7 +52,11 @@
             this.cmbSheets = new System.Windows.Forms.ComboBox();
             this.btnOpenExcel = new System.Windows.Forms.Button();
             this.textboxExcel = new System.Windows.Forms.TextBox();
+            this.textboxCAD = new System.Windows.Forms.TextBox();
+            this.btnOpenCAD = new System.Windows.Forms.Button();
+            this.btnCollectCAD = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
@@ -70,6 +74,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.btnCollectCAD);
+            this.tabPage1.Controls.Add(this.btnOpenCAD);
+            this.tabPage1.Controls.Add(this.textboxCAD);
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -277,7 +284,7 @@
             // 
             // btnOpenExcel
             // 
-            this.btnOpenExcel.Location = new System.Drawing.Point(297, 11);
+            this.btnOpenExcel.Location = new System.Drawing.Point(239, 11);
             this.btnOpenExcel.Name = "btnOpenExcel";
             this.btnOpenExcel.Size = new System.Drawing.Size(71, 25);
             this.btnOpenExcel.TabIndex = 2;
@@ -289,8 +296,35 @@
             // 
             this.textboxExcel.Location = new System.Drawing.Point(10, 11);
             this.textboxExcel.Name = "textboxExcel";
-            this.textboxExcel.Size = new System.Drawing.Size(281, 25);
+            this.textboxExcel.Size = new System.Drawing.Size(223, 25);
             this.textboxExcel.TabIndex = 0;
+            // 
+            // textboxCAD
+            // 
+            this.textboxCAD.Location = new System.Drawing.Point(25, 20);
+            this.textboxCAD.Name = "textboxCAD";
+            this.textboxCAD.Size = new System.Drawing.Size(265, 25);
+            this.textboxCAD.TabIndex = 0;
+            // 
+            // btnOpenCAD
+            // 
+            this.btnOpenCAD.Location = new System.Drawing.Point(296, 20);
+            this.btnOpenCAD.Name = "btnOpenCAD";
+            this.btnOpenCAD.Size = new System.Drawing.Size(75, 25);
+            this.btnOpenCAD.TabIndex = 1;
+            this.btnOpenCAD.Text = "选择";
+            this.btnOpenCAD.UseVisualStyleBackColor = true;
+            this.btnOpenCAD.Click += new System.EventHandler(this.btnOpenCAD_Click);
+            // 
+            // btnCollectCAD
+            // 
+            this.btnCollectCAD.Location = new System.Drawing.Point(25, 60);
+            this.btnCollectCAD.Name = "btnCollectCAD";
+            this.btnCollectCAD.Size = new System.Drawing.Size(75, 23);
+            this.btnCollectCAD.TabIndex = 2;
+            this.btnCollectCAD.Text = "确定";
+            this.btnCollectCAD.UseVisualStyleBackColor = true;
+            this.btnCollectCAD.Click += new System.EventHandler(this.btnCollectCAD_Click);
             // 
             // DataCollectionForm
             // 
@@ -301,6 +335,8 @@
             this.Name = "DataCollectionForm";
             this.Text = "数据采集";
             this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
@@ -335,5 +371,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnCollectCAD;
+        private System.Windows.Forms.Button btnOpenCAD;
+        private System.Windows.Forms.TextBox textboxCAD;
     }
 }

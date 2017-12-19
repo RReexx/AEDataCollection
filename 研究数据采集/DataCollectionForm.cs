@@ -481,6 +481,73 @@ namespace LSD.Edit.Forms
         }
         #endregion
 
+        #region CAD部分
+        private void btnCollectCAD_Click(object sender, EventArgs e)
+        {
+            if (this.textboxCAD.Text == "")
+            {
+                return;
+            }
+            try
+            {
+                //获取文件名和文件路径
+                int pIndex = this.textboxCAD.Text.LastIndexOf("\\");
+                string pFilePath = this.textboxCAD.Text.Substring(0, pIndex);
+                string pFileName = this.textboxCAD.Text.Substring(pIndex + 1);
+                //打开CAD数据集
+                IWorkspaceFactory pWorkspaceFactory;
+                IFeatureWorkspace pFeatureWorkspace;
+                IFeatureLayer pFeatureLayer;
+                IFeatureDataset pFeatureDataset;
+                pWorkspaceFactory = new CadWorkspaceFactoryClass(); //using ESRI.ArcGIS.DataSourcesFile;
+                pFeatureWorkspace = (IFeatureWorkspace)pWorkspaceFactory.OpenFromFile(pFilePath, 0);
+                //打开一个要素集
+                pFeatureDataset = pFeatureWorkspace.OpenFeatureDataset(pFileName);
+                //IFeatureClassContainer可以管理IFeatureDataset中的每个要素类
+                IFeatureClassContainer pFeatClassContainer = (IFeatureClassContainer)pFeatureDataset;
+                IGroupLayer pGroupLayer = new GroupLayerClass();
+                pGroupLayer.Name = pFileName;
+                //对CAD文件中的要素进行遍历处理
+                for (int i = 0; i < pFeatClassContainer.ClassCount; i++)
+                {
+                    IFeatureClass pFeatClass = pFeatClassContainer.get_Class(i);
+                    //如果是注记，则添加注记层
+                    if (pFeatClass.FeatureType == esriFeatureType.esriFTCoverageAnnotation)
+                    {
+                        pFeatureLayer = new CadAnnotationLayerClass();
+                        pFeatureLayer.Name = pFeatClass.AliasName;
+                        pFeatureLayer.FeatureClass = pFeatClass;
+                        pGroupLayer.Add(pFeatureLayer);
+                        //this.pMapControl.Map.AddLayer(pFeatureLayer);
+                    }
+                    else //如果是点、线、面则添加要素层
+                    {
+                        pFeatureLayer = new FeatureLayerClass();
+                        pFeatureLayer.Name = pFeatClass.AliasName;
+                        pFeatureLayer.FeatureClass = pFeatClass;
+                        pGroupLayer.Add(pFeatureLayer);
+                        //this.pMapControl.Map.AddLayer(pFeatureLayer);
+                    }
+                }
+                this.pMapControl.Map.AddLayer(pGroupLayer);
+                this.pMapControl.ActiveView.Refresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnOpenCAD_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog pOpenFileDialog = new OpenFileDialog();
+            pOpenFileDialog.Filter = "CAD(*.dwg)|*.dwg";
+            pOpenFileDialog.Title = "打开CAD数据文件";
+            pOpenFileDialog.ShowDialog();
+
+            this.textboxCAD.Text = pOpenFileDialog.FileName;
+        }
+        #endregion
     }
 }
 
