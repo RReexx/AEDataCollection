@@ -1,0 +1,9 @@
+E:\3diao\本地测试\研究数据采集\研究数据采集\bin\Debug\研究数据采集.exe
+E:\3diao\本地测试\研究数据采集\研究数据采集\bin\Debug\研究数据采集.pdb
+E:\3diao\本地测试\研究数据采集\研究数据采集\obj\x86\Debug\研究数据采集.csprojResolveAssemblyReference.cache
+E:\3diao\本地测试\研究数据采集\研究数据采集\obj\x86\Debug\研究数据采集.csproj.GenerateResource.Cache
+E:\3diao\本地测试\研究数据采集\研究数据采集\obj\x86\Debug\研究数据采集.exe
+E:\3diao\本地测试\研究数据采集\研究数据采集\obj\x86\Debug\研究数据采集.pdb
+E:\3diao\本地测试\研究数据采集\研究数据采集\obj\x86\Debug\LSD.Edit.Forms.DataCollectionForm.resources
+E:\3diao\本地测试\研究数据采集\研究数据采集\obj\x86\Debug\LSD.Edit.Forms.MainForm.resources
+E:\3diao\本地测试\研究数据采集\研究数据采集\obj\x86\Debug\LSD.Edit.Forms.Properties.Resources.resources
