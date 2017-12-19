@@ -25,7 +25,7 @@ namespace LSD.Edit.Forms
     {
         IMapControl3 pMapControl;
         string[] lines;//txt里读取出来的所有行,用这个避免读两次
-        List<string> toDelete=new List<string>();//待删除的文件路径（不包含扩展名）
+        string toDelete;//待删除的文件路径（不包含扩展名）
         OleDbConnection m_conDBConnection;//连excel
 
         public DataCollectionForm(IMapControl3 mapcontrol)
@@ -95,7 +95,7 @@ namespace LSD.Edit.Forms
                 //一行一行解析，返回每个多边形的每个顶点
                 List<List<Vertex>> polygons = ParseLines(lines);
                 //创建一个新的featureclass，用来装文本文件里的那些多边形
-                IFeatureClass newFeatureClass = GetNewFeatureClass(System.IO.Path.GetDirectoryName(textboxTxt.Text), cmbTBBHTxt.SelectedItem.ToString());
+                IFeatureClass newFeatureClass = GetNewFeatureClass(textboxTxt.Text, cmbTBBHTxt.SelectedItem.ToString());
                 //添加读出来的那些多边形，也要添加属性
                 CreateFeatures(newFeatureClass, polygons, cmbTBBHTxt.SelectedItem.ToString());
                 //显示，把处理完成的要素类导进来
@@ -263,7 +263,7 @@ namespace LSD.Edit.Forms
                 //一行一行解析，返回每个多边形的每个顶点
                 List<List<Vertex>> polygons = ParseTable(dt);
                 //创建一个新的featureclass，用来装文本文件里的那些多边形
-                IFeatureClass newFeatureClass = GetNewFeatureClass(System.IO.Path.GetDirectoryName(textboxExcel.Text), cmbTBBHExcel.SelectedItem.ToString());
+                IFeatureClass newFeatureClass = GetNewFeatureClass(textboxExcel.Text, cmbTBBHExcel.SelectedItem.ToString());
                 //添加读出来的那些多边形，也要添加属性
                 CreateFeatures(newFeatureClass, polygons, cmbTBBHExcel.SelectedItem.ToString());
                 //显示，把处理完成的要素类导进来
@@ -321,9 +321,18 @@ namespace LSD.Edit.Forms
         }
 
         //新的要素类，装文本读出来的多边形，在当前打开的文件所在的文件夹下创建
-        private IFeatureClass GetNewFeatureClass(string workspacePath, string TBBHFieldName)
+        private IFeatureClass GetNewFeatureClass(string path, string TBBHFieldName)
         {
-            //打开被解析的文本所在文件夹作为工作空间 在文件夹下创建临时的shp 
+            //使用系统的临时文件夹作为工作空间
+            string workspacePath = System.IO.Path.GetTempPath();//C:\Users\Xiao Yi\AppData\Local\Temp\
+            workspacePath = workspacePath + "\\LSDAdminCreateFeatureClassTemp";
+            if (!Directory.Exists(workspacePath)) 
+            {
+                Directory.CreateDirectory(workspacePath);//创建一个隐藏的临时文件夹，便于删除，这名字肯定不会重,其实不删都可以的
+                File.SetAttributes(workspacePath, FileAttributes.Hidden);
+            }
+            toDelete = workspacePath;
+            //打开工作空间
             IWorkspaceFactory pWorkspaceFactory = new ShapefileWorkspaceFactoryClass();
             IFeatureWorkspace pFeatureWorkspace = (IFeatureWorkspace)pWorkspaceFactory.OpenFromFile(workspacePath, 0);
             //加上图斑编号字段
@@ -332,28 +341,28 @@ namespace LSD.Edit.Forms
             fieldEdit.Name_2 = TBBHFieldName;
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
             IField[] arrField = { field };
-            //要素类的名称，随机，避免已存在，否则会报错
-            Random rd = new Random();
-            int n = rd.Next(100000000);
-            string randomName = "Temp" + n.ToString();
-            toDelete.Add(workspacePath + "\\" + randomName);
-            IFeatureClass newFeatureClass = CreateFeatureClass(randomName, pFeatureWorkspace, arrField);
+            
+            //要素类的名称，避免已存在，否则会报错
+            string fileName = System.IO.Path.GetFileName(path).Split('.')[0];
+            while (File.Exists(workspacePath+"\\"+fileName + ".shp"))//如果已存在，就加长一点
+            {
+                fileName += "_副本";
+            }            
+            IFeatureClass newFeatureClass = CreateFeatureClass(fileName, pFeatureWorkspace, arrField);
             //系统关闭时，把临时创建的删掉    TODO合的时候记得改        
             MainForm.mainform.FormClosing += new System.Windows.Forms.FormClosingEventHandler(DeleteTempFiles);
             return newFeatureClass;
         }
 
-        //关闭整个系统时删掉临时文件
+        //关闭整个系统时删掉临时文件,其实不删都可以的，本来就是用的系统的Temp
         private void DeleteTempFiles(object sender, FormClosingEventArgs e)
         {
-            foreach (string path in toDelete)
+            try
             {
-                File.Delete(path + ".shp");
-                File.Delete(path + ".dbf");
-                File.Delete(path + ".sbn");
-                File.Delete(path + ".sbx");
-                File.Delete(path + ".shx");
+                if (Directory.Exists(toDelete))
+                    Directory.Delete(toDelete, true);
             }
+            catch (Exception ex) { }//可能有些删不了，比如锁住的，不要紧
         }
 
         //根据读取出来的坐标，创建新要素
